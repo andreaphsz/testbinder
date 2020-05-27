@@ -8,7 +8,7 @@ ARG NB_UID
 ## Install some TexLive packages
 ##USER root
 ##RUN tlmgr install beamer beamertheme-metropolis collection-latex mathspec oberdiek pgfopts translator
-##COPY . ${HOME}
+COPY . ${HOME}
 ##RUN chown -R ${NB_USER} ${HOME}
 
 ## Become normal user again
