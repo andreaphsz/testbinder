@@ -1,0 +1,51 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+### Demonstration that positive raw data correlations in general
+## do not result in postive linear regression coefficients
+```{r}
+y  <- c(1.25,2.14,3.02,3.53,4.22,1.02)
+x1 <- c(1,2,3,4,5,2)
+x2 <- c(1.73,2.66,3.58,4.59,5.86,4.14)
+
+dat <- data.frame(y=y, x1=x1, x2=x2)
+
+cor(dat)
+
+summary(fit <- lm(y ~ x1 + x2, data=dat))
+car::vif(fit)
+```
+
+### Estimation of the regression plane
+```{r}
+mod <- fit
+cf.mod <- coef(mod)
+```
+
+### Calculate z on a grid of x-y values
+```{r}
+x1.seq <- seq(min(x1),max(x1),length.out=25)
+x2.seq <- seq(min(x2),max(x2),length.out=25)
+z <- t(outer(x1.seq, x2.seq, function(x,y) cf.mod[1]+cf.mod[2]*x+cf.mod[3]*y))
+```
+
+### Draw the plane with "plot_ly" and add points with "add_trace"
+## https://stackoverflow.com/a/44324365
+```{r}
+library(plotly)
+
+cols <- c("#f5cb11", "#b31d83")
+
+p <- plot_ly(x=~x1.seq, y=~x2.seq, z=~z,
+             colors = c("#f5cb11", "#b31d83"),type="surface") %>%
+    add_trace(data=dat, x=x1, y=x2, z=y, mode="markers", type="scatter3d",
+              marker = list(color=cols, opacity=0.7, symbol=105)) %>%
+    layout(scene = list(
+               aspectmode = "manual", aspectratio = list(x=1, y=1, z=1),
+               xaxis = list(title = "X1", range = c(0,6)),
+               yaxis = list(title = "X2", range = c(0,6)),
+               zaxis = list(title = "Y", range = c(0,6))))
+print(p)
+```
