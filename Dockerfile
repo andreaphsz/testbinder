@@ -6,10 +6,10 @@ ARG NB_USER
 ARG NB_UID
 
 ## Install some TexLive packages
-##USER root
+USER root
 ##RUN tlmgr install beamer beamertheme-metropolis collection-latex mathspec oberdiek pgfopts translator
 COPY . ${HOME}
-##RUN chown -R ${NB_USER} ${HOME}
+RUN chown -R ${NB_USER} ${HOME}
 
 ## Become normal user again
 USER ${NB_USER}
